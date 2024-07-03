@@ -39,7 +39,11 @@ public class UserActivityLogProcessor {
             try {
                 processFile(spark, filePath, checkpointDir);
             } catch (Exception e) {
-            	// TODO: Slack Alert
+                if (!webhookUrl.isEmpty()) {
+                    slackAlertManager.sendSlackAlert("Error processing file " + filePath + ": " + e.getMessage());
+                } else {
+                    System.err.println("Error processing file " + filePath + ": " + e.getMessage());
+                }
             }
         }
         sc.stop();
